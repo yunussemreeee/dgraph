@@ -18,6 +18,7 @@ package admin
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -855,11 +856,14 @@ func (as *adminServer) resetSchema(ns uint64, gqlSchema schema.Schema) {
 func (as *adminServer) lazyLoadSchema(namespace uint64) {
 	// if the schema is already in memory, no need to fetch it from disk
 	as.mux.RLock()
+	fmt.Println("------------------------------------", "1")
 	if currentSchema, ok := as.schema[namespace]; ok && currentSchema.loaded {
+		fmt.Println("------------------------------------", "1-1")
 		as.mux.RUnlock()
 		return
 	}
 	as.mux.RUnlock()
+	fmt.Println("------------------------------------", "2")
 
 	// otherwise, fetch the schema from disk
 	sch, err := getCurrentGraphQLSchema(namespace)
@@ -880,12 +884,15 @@ func (as *adminServer) lazyLoadSchema(namespace uint64) {
 	}
 
 	as.mux.Lock()
+	fmt.Println("------------------------------------", "3")
 	defer as.mux.Unlock()
+	fmt.Println("------------------------------------", "4")
 	sch.loaded = true
 	as.schema[namespace] = sch
 	as.resetSchema(namespace, generatedSchema)
 
 	glog.Infof("Successfully lazy-loaded GraphQL schema. Serving GraphQL API.")
+	fmt.Println("------------------------------------", "5")
 }
 
 func LazyLoadSchema(namespace uint64) {
