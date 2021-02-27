@@ -196,6 +196,7 @@ func runTestsFor(ctx context.Context, pkg, prefix string) error {
 		time.Sleep(time.Second)
 	} else {
 		if err := cmd.Run(); err != nil {
+			printClusterLogs(prefix)
 			return fmt.Errorf("While running command: %v Error: %v", args, err)
 		}
 	}
@@ -209,6 +210,21 @@ func runTestsFor(ctx context.Context, pkg, prefix string) error {
 			" %s. check logs for more details", pkg, prefix)
 	}
 	return nil
+}
+
+func printClusterLogs(prefix string) {
+	fmt.Println("alpha1:")
+	command("docker-compose", "-p", prefix, "logs", "alpha1")
+	fmt.Println("alpha2:")
+	command("docker-compose", "-p", prefix, "logs", "alpha2")
+	fmt.Println("alpha3:")
+	command("docker-compose", "-p", prefix, "logs", "alpha3")
+	fmt.Println("zero1:")
+	command("docker-compose", "-p", prefix, "logs", "zero1")
+	fmt.Println("zero2:")
+	command("docker-compose", "-p", prefix, "logs", "zero2")
+	fmt.Println("zero3:")
+	command("docker-compose", "-p", prefix, "logs", "zero3")
 }
 
 func hasTestFiles(pkg string) bool {
